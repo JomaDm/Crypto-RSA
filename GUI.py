@@ -1,98 +1,161 @@
 from tkinter import *
 
-HEIGHT = 300
-WIDTH = 270
-background_color = "#23262E"
-white = "#fff"
-select_color = "#7A5FEE"
-show_inputs = False
-last_option = 0
+class GUI():  
 
-def selectButton_function(option):
+  HEIGHT = 300
+  WIDTH = 270
+  background_color = "#23262E"
+  white = "#fff"
+  select_color = "#7A5FEE"
+  show_inputs = False
+  last_option = 0
+  window = None
+  frame = None
   
-  global label_priv_key
-  global input_priv_key
-  global label_public_key
-  global input_public_key
-  global encryptButton
-  global label_space
+  label_priv_key = None
+  input_priv_key = None
+  label_public_key = None
+  input_public_key = None
+  encryptButton = None
+  label_space = None
+
   
-  global show_inputs
-  global last_option
-  if(last_option != option and not show_inputs):    
-    show_inputs = True
-    generateInputWigets()
+  def __init__(self):
+    self.window = Tk()
+    self.window.title("Practice 0.RSA")
+    self.window.geometry(str(self.HEIGHT)+'x'+str(self.WIDTH))
+    self.window.resizable(0,0)
+
+    self.frame = Frame(self.window,
+                  background=self.background_color
+                  )
+    self.frame.pack(fill="both",
+               expand=True
+               )
+
+    self.label_opt = Label(self.frame, 
+                           text="Choose your option:",
+                           fg=self.white,
+                           bg=self.background_color,
+                           font=("Arial",14)
+                           )
+    self.label_opt.pack()
+
+    option = IntVar()
+
+    self.radioButton1 = Radiobutton(self.frame,
+                               text="Encrypt",
+                               variable=option,
+                               value=1,
+                               bg=self.background_color,
+                               selectcolor=self.select_color,
+                               fg=self.white,
+                               font=("Arial",12)
+                               )
+    self.radioButton1.pack()
+
+    self.radioButton2 = Radiobutton(self.frame,
+                                    text="Decrypt",
+                                    variable=option,
+                                    value=2,
+                                    bg=self.background_color,
+                                    selectcolor=self.select_color,
+                                    fg=self.white,
+                                    font=("Arial",12)
+                                    )
+    self.radioButton2.pack()
+
+    self.selectButton = Button(self.frame,
+                               text="select",
+                               bd=0,
+                               fg=self.white,
+                               bg=self.select_color,
+                               font=("Arial",12),
+                               command=lambda:self.selectButton_function(option.get())
+                               )
+    self.selectButton.pack()
     
-  elif(last_option != option and show_inputs):
-    destroyWidgets(label_priv_key,label_public_key,input_priv_key,input_public_key,encryptButton,label_space)
-    generateInputWigets()    
-  
-  if(option==1 and last_option != option):
-    #Encrypt     
-    setInputText(input_priv_key,"Hola")    
-    encryptButton = Button(frame,height=1,text="Encrypt",bd=0,fg=white,bg=select_color,font=("Arial",12))
-    encryptButton.pack()    
-  elif(option == 2 and last_option != option):
-    #Decrypt    
-    encryptButton = Button(frame,height=1,text="Decrypt",bd=0,fg=white,bg=select_color,font=("Arial",12))
-    encryptButton.pack()
-  
-  last_option = option
-  
-def setInputText(input_entry,text):
-  input_entry.delete(0,END)
-  input_entry.insert(0,text)
+  def run(self):
+    self.window.mainloop()
 
-def destroyWidgets(*widgets):
-  for i in widgets:
-    i.destroy()
     
-def generateInputWigets():
-  global label_priv_key
-  global input_priv_key
-  global label_public_key
-  global input_public_key
-  global encryptButton
-  global label_space
-  
-  label_priv_key = Label(frame,text="Private Key:",bg=background_color,fg=white,font=("Arial",12))
-  label_priv_key.pack()
-  input_priv_key = Entry(frame,text="")
-  input_priv_key.pack()
 
-  label_public_key = Label(frame,text="Public Key:",bg=background_color,fg=white,font=("Arial",12))
-  label_public_key.pack()
-  input_public_key = Entry(frame,text="")
-  input_public_key.pack() 
-  label_space = Label(frame,text="",bg=background_color)
-  label_space.pack()
+  def selectButton_function(self,option):    
+    if(self.last_option != option and not self.show_inputs):    
+      self.show_inputs = True
+      self.generateInputWigets()
+      
+    elif(self.last_option != option and self.show_inputs):
+      self.destroyWidgets(self.label_priv_key,
+                          self.label_public_key,
+                          self.input_priv_key,
+                          self.input_public_key,
+                          self.encryptButton,
+                          self.label_space)
+      self.generateInputWigets()    
+    
+    if(option==1 and self.last_option != option):
+      #Encrypt     
+      self.setInputText(self.input_priv_key,"Hola")    
+      self.encryptButton = Button(self.frame,
+                                  height=1,
+                                  text="Encrypt",
+                                  bd=0,
+                                  fg=self.white,
+                                  bg=self.select_color,
+                                  font=("Arial",12)
+                                  )
+      self.encryptButton.pack() 
+         
+    elif(option == 2 and self.last_option != option):
+      #Decrypt    
+      self.encryptButton = Button(self.frame,
+                                  height=1,
+                                  text="Decrypt",
+                                  bd=0,
+                                  fg=self.white,
+                                  bg=self.select_color,
+                                  font=("Arial",12)
+                                  )
+      self.encryptButton.pack()
+    
+    self.last_option = option
+    
+  def setInputText(self,input_entry,text):
+    input_entry.delete(0,END)
+    input_entry.insert(0,text)
 
-window = Tk()
-window.title("Practice 0.RSA")
-window.geometry(str(HEIGHT)+'x'+str(WIDTH))
-window.resizable(0,0)
+  def destroyWidgets(self,*widgets):
+    for i in widgets:
+      i.destroy()
+      
+  def generateInputWigets(self,):
+    
+    self.label_priv_key = Label(self.frame,
+                                text="Private Key:",
+                                bg=self.background_color,
+                                fg=self.white,
+                                font=("Arial",12)
+                                )
+    self.label_priv_key.pack()
+    self.input_priv_key = Entry(self.frame,text="")
+    self.input_priv_key.pack()
 
-frame = Frame(window,background=background_color)
-frame.pack(fill="both", expand=True)
+    self.label_public_key = Label(self.frame,
+                                  text="Public Key:",
+                                  bg=self.background_color,
+                                  fg=self.white,
+                                  font=("Arial",12)
+                                  )
+    self.label_public_key.pack()
+    self.input_public_key = Entry(self.frame,text="")
+    self.input_public_key.pack() 
+    self.label_space = Label(self.frame,
+                             text="",
+                             bg=self.background_color
+                             )
+    self.label_space.pack()
 
-label_opt = Label(frame, text="Choose your option:",fg=white,bg=background_color,font=("Arial",14))
-label_opt.pack()
-
-option = IntVar()
-
-radioButton1 = Radiobutton(frame,text="Encrypt",variable=option,value=1,bg=background_color,selectcolor=select_color,fg=white,font=("Arial",12))
-radioButton1.pack()
-
-radioButton2 = Radiobutton(frame,text="Decrypt",variable=option,value=2,bg=background_color,selectcolor=select_color,fg=white,font=("Arial",12))
-radioButton2.pack()
-
-selectButton = Button(frame,text="select",bd=0,fg=white,bg=select_color,font=("Arial",12),command=lambda:selectButton_function(option.get()))
-selectButton.pack()
-
-label_priv_key = None
-input_priv_key = None
-label_public_key = None
-input_public_key = None
-encryptButton = None
-label_space = None
-window.mainloop()
+if __name__ == "__main__":
+  gui = GUI()
+  gui.run()
