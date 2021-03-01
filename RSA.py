@@ -4,48 +4,45 @@ from file_manager import *
 import binascii
 
 
-def encrypt_message_public_B():
+def encrypt_message():
+    # Leer archivo
     msg = bytes(open_read_file("message.txt"), encoding='utf8')
     
-    #   Cifrar con publicKey B
-    f = open('publicKey_B.pem','r')
+    #   Abrir llave publica A
+    f = open('publicKey_A.pem','r')
     pubKey_B = RSA.importKey(f.read())
     publicKey_B = pubKey_B.publickey()
+    f.close()
 
+    #   Cifrar usando llave publica A
     encryptor = PKCS1_OAEP.new(publicKey_B)
     encrypted = encryptor.encrypt(msg)
-    print("Encrypted:", binascii.hexlify(encrypted))
-    return binascii.hexlify(encrypted)
+    
+    #   Escribit txt
+    f = open('message_C.txt','wb')
+    f.write(encrypted)
 
-def encrypt_message_private_A(msg):   
-    #   Cifrar con privateKey A
+
+def decrypt_message():   
+    #   Leer archivo cifrado
+    f = open("message_C.txt", 'rb')
+    msg = f.read()
+
+    #   Abrir llave privada A
     f = open('privateKey_A.pem','r')
     privKey_A = RSA.importKey(f.read())
     
-    encryptor = PKCS1_OAEP.new(privKey_A)
-    encrypted_msg = encryptor.encrypt(msg)
-    print(encrypted_msg)
-    encoded_encrypted_msg = base64.b64encode(encrypted_msg)
-    print(encoded_encrypted_msg)
-    return encoded_encrypted_msg
+    #   Decifrar con privada A
+    cipher = PKCS1_OAEP.new(privKey_A)
+    message = cipher.decrypt(msg)
+
+    #   Escribir mensaje 
+    f = open('message_C_D.txt','w')
+    f.write(str(message))
 
 
 def main():
-    encryted = encrypt_message_public_B()
-    encrypt_message_private_A(encryted)
+    encrypt_message()
+    decrypt_message()
 
 main()
-
-# msg = b'A message for encryption'
-
-# encryptor = PKCS1_OAEP.new(publicKey_B)
-# encrypted = encryptor.encrypt(msg)
-# print("Encrypted:", encrypted)
-
-
-# f = open('privateKey_B.pem','r')
-# priKey_B = RSA.importKey(f.read())
-
-# decryptor = PKCS1_OAEP.new(priKey_B)
-# decrypted = decryptor.decrypt(encrypted)
-# print('Decrypted:', decrypted)
