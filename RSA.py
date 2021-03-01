@@ -2,10 +2,22 @@ from Crypto.PublicKey import RSA
 from Crypto.Cipher import PKCS1_OAEP
 import binascii
 
-publicKey_B = open("publicKey_B.pem")
-publicKey_B = RSA.importKey(publicKey_B)
+
+
+f = open('publicKey_B.pem','r')
+pubKey_B = RSA.importKey(f.read())
+publicKey_B = pubKey_B.publickey()
 
 msg = b'A message for encryption'
+
 encryptor = PKCS1_OAEP.new(publicKey_B)
 encrypted = encryptor.encrypt(msg)
-print("Encrypted:", binascii.hexlify(encrypted))
+print("Encrypted:", encrypted)
+
+
+f = open('privateKey_B.pem','r')
+priKey_B = RSA.importKey(f.read())
+
+decryptor = PKCS1_OAEP.new(priKey_B)
+decrypted = decryptor.decrypt(encrypted)
+print('Decrypted:', decrypted)

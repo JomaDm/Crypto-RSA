@@ -10,7 +10,7 @@ def keysPublic_Generator():
 
     f = open('privateKey_A.pem','wb')
     privKeyPEM = keyPair.exportKey()
-    f.write(pubKeyPEM)
+    f.write(privKeyPEM)
 
     keyPair = RSA.generate(3072)
     
@@ -21,6 +21,6 @@ def keysPublic_Generator():
 
     f = open('privateKey_B.pem','wb')
     privKeyPEM = keyPair.exportKey()
-    f.write(pubKeyPEM)
+    f.write(privKeyPEM)
 
 keysPublic_Generator()
