@@ -1,4 +1,7 @@
 from tkinter import *
+from tkinter import filedialog
+from Keys import *
+from rsa_file import *
 
 class GUI():  
 
@@ -12,13 +15,16 @@ class GUI():
   window = None
   frame = None
   
-  label_priv_key = None
-  input_priv_key = None
-  label_public_key = None
-  input_public_key = None
-  encryptButton = None
-  label_space = None
+  path_encrypt = ""
+  path_key = ""
+  path_file_to_Decrypt = ""  
+  
+  generate_keys = False
+  choose_file = False
+  choose_fileD = False
+  choose_key = False
 
+  dynamic_widgets = []
   
   def __init__(self):
     self.window = Tk()
@@ -74,6 +80,7 @@ class GUI():
                                command=lambda:self.selectButton_function(option.get())
                                )
     self.selectButton.pack()
+        
     
   def run(self):
     self.window.mainloop()
@@ -81,43 +88,15 @@ class GUI():
     
 
   def selectButton_function(self,option):    
-    if(self.last_option != option and not self.show_inputs):    
-      self.show_inputs = True
-      self.generateInputWigets()
-      
-    elif(self.last_option != option and self.show_inputs):
-      self.destroyWidgets(self.label_priv_key,
-                          self.label_public_key,
-                          self.input_priv_key,
-                          self.input_public_key,
-                          self.encryptButton,
-                          self.label_space)
-      self.generateInputWigets()    
-    
     if(option==1 and self.last_option != option):
-      #Encrypt     
-      self.setInputText(self.input_priv_key,"Hola")    
-      self.encryptButton = Button(self.frame,
-                                  height=1,
-                                  text="Encrypt",
-                                  bd=0,
-                                  fg=self.white,
-                                  bg=self.select_color,
-                                  font=("Arial",12)
-                                  )
-      self.encryptButton.pack() 
+      #Encrypt       
+      self.generateEncryptWigets()  
+      
          
     elif(option == 2 and self.last_option != option):
+      self.generateDecryptWidgets()
       #Decrypt    
-      self.encryptButton = Button(self.frame,
-                                  height=1,
-                                  text="Decrypt",
-                                  bd=0,
-                                  fg=self.white,
-                                  bg=self.select_color,
-                                  font=("Arial",12)
-                                  )
-      self.encryptButton.pack()
+      
     
     self.last_option = option
     
@@ -125,36 +104,143 @@ class GUI():
     input_entry.delete(0,END)
     input_entry.insert(0,text)
 
-  def destroyWidgets(self,*widgets):
-    for i in widgets:
+  def destroyDynamicWidgets(self):
+    self.generate_keys = False
+    self.choose_file = False
+    self.choose_fileD = False
+    self.choose_key = False
+    for i in self.dynamic_widgets:
       i.destroy()
       
-  def generateInputWigets(self,):
-    
-    self.label_priv_key = Label(self.frame,
-                                text="Private Key:",
-                                bg=self.background_color,
-                                fg=self.white,
-                                font=("Arial",12)
-                                )
-    self.label_priv_key.pack()
-    self.input_priv_key = Entry(self.frame,text="")
-    self.input_priv_key.pack()
-
-    self.label_public_key = Label(self.frame,
-                                  text="Public Key:",
-                                  bg=self.background_color,
-                                  fg=self.white,
-                                  font=("Arial",12)
-                                  )
-    self.label_public_key.pack()
-    self.input_public_key = Entry(self.frame,text="")
-    self.input_public_key.pack() 
-    self.label_space = Label(self.frame,
+  def generateDecryptWidgets(self):
+    self.destroyDynamicWidgets()
+    label_space = Label(self.frame,
                              text="",
                              bg=self.background_color
                              )
-    self.label_space.pack()
+    label_space.pack()
+    self.dynamic_widgets.append(label_space)
+    
+    chooseKeysBtn = Button(self.frame,
+                               text="Key",
+                               bd=0,
+                               fg=self.white,
+                               bg=self.select_color,
+                               font=("Arial",12),
+                               command=lambda:self.pathFile(self.path_key,self.choose_key)
+                               )
+    chooseKeysBtn.pack()
+    self.dynamic_widgets.append(chooseKeysBtn)
+    label_space = Label(self.frame,
+                             text="",
+                             bg=self.background_color
+                             )
+    label_space.pack()
+    self.dynamic_widgets.append(label_space)
+    EncryptedfileBtn = Button(self.frame,
+                               text="Encrypted File",
+                               bd=0,
+                               fg=self.white,
+                               bg=self.select_color,
+                               font=("Arial",12),
+                               command=lambda:self.pathFile(self.path_file_to_Decrypt,self.choose_fileD)
+                               )
+    EncryptedfileBtn.pack()
+    self.dynamic_widgets.append(EncryptedfileBtn)
+    label_space = Label(self.frame,
+                             text="",
+                             bg=self.background_color
+                             )
+    label_space.pack()
+    self.dynamic_widgets.append(label_space)
+    encryptButton = Button(self.frame,
+                                  height=1,
+                                  text="Decrypt",
+                                  bd=0,
+                                  fg=self.white,
+                                  bg=self.select_color,
+                                  font=("Arial",12),
+                                  command=lambda:self.decrypt()
+                                  )
+    encryptButton.pack()
+    self.dynamic_widgets.append(encryptButton)
+    
+      
+  def generateEncryptWigets(self):
+    self.destroyDynamicWidgets()
+    label_space = Label(self.frame,
+                             text="",
+                             bg=self.background_color
+                             )
+    label_space.pack()
+    self.dynamic_widgets.append(label_space)
+    
+    generateKeysBtn = Button(self.frame,
+                               text="Generate Keys",
+                               bd=0,
+                               fg=self.white,
+                               bg=self.select_color,
+                               font=("Arial",12),
+                               command=lambda:self.generateKeysFunction()
+                               )
+    generateKeysBtn.pack()
+    self.dynamic_widgets.append(generateKeysBtn)
+    
+    label_space = Label(self.frame,
+                             text="",
+                             bg=self.background_color
+                             )
+    label_space.pack()
+    self.dynamic_widgets.append(label_space)
+    
+    File = Button(self.frame,
+                              text="File",
+                              bd=0,
+                              fg=self.white,
+                              bg=self.select_color,
+                              font=("Arial",12),
+                              command=lambda:self.pathFile(self.path_encrypt,self.choose_file)
+                              )
+    File.pack()
+    self.dynamic_widgets.append(File)
+    label_space = Label(self.frame,
+                             text="",
+                             bg=self.background_color
+                             )
+    label_space.pack()
+    self.dynamic_widgets.append(label_space)
+    encryptButton = Button(self.frame,
+                                  height=1,
+                                  text="Encrypt",
+                                  bd=0,
+                                  fg=self.white,
+                                  bg=self.select_color,
+                                  font=("Arial",12),
+                                  command=lambda:self.encrypt()
+                                  )
+    encryptButton.pack()
+    self.dynamic_widgets.append(encryptButton)
+    
+  def generateKeysFunction(self):
+    keysPublic_Generator()
+    self.generate_keys = True
+    
+  def pathFile(self,var_storage_path,check_type_path):
+    path = filedialog.askopenfilename()    
+    var_storage_path = path    
+    check_type_path = True    
+    print("Archivo seleccionado")
+  
+  def encrypt(self):
+    
+    if(self.path_encrypt != "" and self.generate_keys):
+      encrypt_message(path_file=self.path_encrypt)
+      print("Encryption Finished")
+  
+  def decrypt(self):
+    if(self.choose_fileD and self.choose_key):
+      decrypt_message(path_encrypt_file=self.path_file_to_Decrypt,path_key=self.path_key)
+    
 
 if __name__ == "__main__":
   gui = GUI()

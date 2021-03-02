@@ -7,9 +7,11 @@ def keysPublic_Generator():
     pubKey = keyPair.publickey()
     pubKeyPEM = pubKey.exportKey()
     f.write(pubKeyPEM)
+    f.close()
 
     f = open('privateKey_A.pem','wb')
     privKeyPEM = keyPair.exportKey()
     f.write(privKeyPEM)
+    f.close()
 
-keysPublic_Generator()
+#keysPublic_Generator()
