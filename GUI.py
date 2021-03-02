@@ -127,7 +127,7 @@ class GUI():
                                fg=self.white,
                                bg=self.select_color,
                                font=("Arial",12),
-                               command=lambda:self.pathFile(self.path_key,self.choose_key)
+                               command=lambda:self.pathKeyDecrypt()
                                )
     chooseKeysBtn.pack()
     self.dynamic_widgets.append(chooseKeysBtn)
@@ -143,7 +143,7 @@ class GUI():
                                fg=self.white,
                                bg=self.select_color,
                                font=("Arial",12),
-                               command=lambda:self.pathFile(self.path_file_to_Decrypt,self.choose_fileD)
+                               command=lambda:self.pathFileDecrypt()
                                )
     EncryptedfileBtn.pack()
     self.dynamic_widgets.append(EncryptedfileBtn)
@@ -164,6 +164,16 @@ class GUI():
                                   )
     encryptButton.pack()
     self.dynamic_widgets.append(encryptButton)
+    
+  def pathKeyDecrypt(self):    
+    self.path_key = filedialog.askopenfilename()          
+    self.choose_key = True
+    print("Archivo seleccionado")
+  
+  def pathFileDecrypt(self):
+    self.path_file_to_Decrypt = filedialog.askopenfilename()          
+    self.choose_fileD = True
+    print("Archivo seleccionado")
     
       
   def generateEncryptWigets(self):
@@ -199,7 +209,7 @@ class GUI():
                               fg=self.white,
                               bg=self.select_color,
                               font=("Arial",12),
-                              command=lambda:self.pathFile(self.path_encrypt,self.choose_file)
+                              command=lambda:self.pathFileEncrypt()
                               )
     File.pack()
     self.dynamic_widgets.append(File)
@@ -220,6 +230,11 @@ class GUI():
                                   )
     encryptButton.pack()
     self.dynamic_widgets.append(encryptButton)
+
+  def pathFileEncrypt(self):     
+    self.path_encrypt = filedialog.askopenfilename()          
+    self.choose_file = True
+    print("Archivo seleccionado")
     
   def generateKeysFunction(self):
     keysPublic_Generator()
@@ -231,8 +246,7 @@ class GUI():
     check_type_path = True    
     print("Archivo seleccionado")
   
-  def encrypt(self):
-    
+  def encrypt(self):    
     if(self.path_encrypt != "" and self.generate_keys):
       encrypt_message(path_file=self.path_encrypt)
       print("Encryption Finished")
